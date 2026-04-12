@@ -13,8 +13,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const defaultModel =
-      body.provider === "anthropic" ? "claude-sonnet-4-20250514" : "gpt-4o";
+    const defaultModels: Record<string, string> = {
+      anthropic: "claude-sonnet-4-20250514",
+      openai: "gpt-4o",
+      gemini: "gemini-2.5-flash",
+    };
+    const defaultModel = defaultModels[body.provider] ?? "gpt-4o";
 
     const llmRequest: LLMRequest = {
       provider: body.provider,

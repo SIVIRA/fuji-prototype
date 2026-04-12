@@ -34,10 +34,30 @@ vi.mock("openai", () => {
   return { default: MockOpenAI };
 });
 
+// Gemini SDK をモック
+vi.mock("@google/generative-ai", () => {
+  const mockSendMessage = vi.fn().mockResolvedValue({
+    response: {
+      text: () => "Hello from Gemini",
+    },
+  });
+  const MockGoogleGenerativeAI = vi.fn().mockImplementation(function () {
+    return {
+      getGenerativeModel: vi.fn().mockReturnValue({
+        startChat: vi.fn().mockReturnValue({
+          sendMessage: mockSendMessage,
+        }),
+      }),
+    };
+  });
+  return { GoogleGenerativeAI: MockGoogleGenerativeAI };
+});
+
 describe("callLLM", () => {
   beforeEach(() => {
     vi.stubEnv("ANTHROPIC_API_KEY", "test-anthropic-key");
     vi.stubEnv("OPENAI_API_KEY", "test-openai-key");
+    vi.stubEnv("GEMINI_API_KEY", "test-gemini-key");
   });
 
   it("should call Anthropic API and return response", async () => {
@@ -66,6 +86,20 @@ describe("callLLM", () => {
     expect(response.content).toBe("Hello from GPT");
     expect(response.provider).toBe("openai");
     expect(response.model).toBe("gpt-4o");
+  });
+
+  it("should call Gemini API and return response", async () => {
+    const request: LLMRequest = {
+      provider: "gemini",
+      model: "gemini-2.5-flash",
+      messages: [{ role: "user", content: "Hello" }],
+    };
+
+    const response = await callLLM(request);
+
+    expect(response.content).toBe("Hello from Gemini");
+    expect(response.provider).toBe("gemini");
+    expect(response.model).toBe("gemini-2.5-flash");
   });
 
   it("should throw error for unsupported provider", async () => {

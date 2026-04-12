@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { LLMRequest, LLMResponse } from "./types";
 
 async function callAnthropic(request: LLMRequest): Promise<LLMResponse> {
@@ -49,12 +50,46 @@ async function callOpenAI(request: LLMRequest): Promise<LLMResponse> {
   };
 }
 
+async function callGemini(request: LLMRequest): Promise<LLMResponse> {
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
+
+  const model = genAI.getGenerativeModel({ model: request.model });
+
+  const systemMessage = request.messages.find((m) => m.role === "system");
+  const nonSystemMessages = request.messages.filter((m) => m.role !== "system");
+
+  const history = nonSystemMessages.slice(0, -1).map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+
+  const lastMessage = nonSystemMessages[nonSystemMessages.length - 1];
+
+  const chat = model.startChat({
+    history,
+    ...(systemMessage
+      ? { systemInstruction: { role: "user", parts: [{ text: systemMessage.content }] } }
+      : {}),
+  });
+
+  const result = await chat.sendMessage(lastMessage.content);
+  const response = result.response;
+
+  return {
+    content: response.text(),
+    model: request.model,
+    provider: "gemini",
+  };
+}
+
 export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
   switch (request.provider) {
     case "anthropic":
       return callAnthropic(request);
     case "openai":
       return callOpenAI(request);
+    case "gemini":
+      return callGemini(request);
     default:
       throw new Error(`Unsupported provider: ${request.provider}`);
   }

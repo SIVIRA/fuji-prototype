@@ -101,7 +101,7 @@ const res = await fetch("/api/llm", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    provider: "anthropic",  // or "openai"
+    provider: "anthropic",  // or "openai" or "gemini"
     model: "claude-sonnet-4-20250514",
     messages: [{ role: "user", content: "メッセージ" }],
   }),
@@ -109,8 +109,8 @@ const res = await fetch("/api/llm", {
 const data = await res.json();
 ```
 
-- provider は "anthropic" または "openai" を指定する
-- model はユーザが指定しない場合、anthropic なら "claude-sonnet-4-20250514"、openai なら "gpt-4o" をデフォルトとする
+- provider は "anthropic"、"openai"、"gemini" のいずれかを指定する
+- model はユーザが指定しない場合、anthropic なら "claude-sonnet-4-20250514"、openai なら "gpt-4o"、gemini なら "gemini-2.5-flash" をデフォルトとする
 
 ### モックデータ
 

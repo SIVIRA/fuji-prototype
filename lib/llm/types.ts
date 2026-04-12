@@ -1,4 +1,4 @@
-export type LLMProvider = "anthropic" | "openai";
+export type LLMProvider = "anthropic" | "openai" | "gemini";
 
 export interface LLMMessage {
   role: "user" | "assistant" | "system";
