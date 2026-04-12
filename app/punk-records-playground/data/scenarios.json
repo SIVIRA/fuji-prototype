@@ -1,0 +1,146 @@
+[
+  {
+    "id": "anthropic-structured-1",
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "taskType": "structured_output",
+    "label": "商品情報の構造化抽出",
+    "originalPrompt": "以下の商品レビューから商品名、評価、長所、短所を抽出してください。\n\nレビュー: このワイヤレスイヤホンは音質が素晴らしく、ノイズキャンセリングも優秀です。ただし、バッテリーが5時間しか持たないのが残念。価格は15,000円で、コスパは良いと思います。総合評価は4点です。",
+    "transformedPrompt": "<instructions>\n<task>以下の商品レビューから情報を構造化して抽出してください。</task>\n<output_format>\nJSON形式で以下のフィールドを含めてください:\n- product_name: string\n- rating: number (1-5)\n- pros: string[]\n- cons: string[]\n- price: string\n</output_format>\n<context>\nレビュー: このワイヤレスイヤホンは音質が素晴らしく、ノイズキャンセリングも優秀です。ただし、バッテリーが5時間しか持たないのが残念。価格は15,000円で、コスパは良いと思います。総合評価は4点です。\n</context>\n</instructions>",
+    "promptRuleApplied": "rule_xml_structured_v1",
+    "response": "{\n  \"product_name\": \"ワイヤレスイヤホン\",\n  \"rating\": 4,\n  \"pros\": [\"音質が素晴らしい\", \"ノイズキャンセリングが優秀\", \"コスパが良い\"],\n  \"cons\": [\"バッテリーが5時間しか持たない\"],\n  \"price\": \"15,000円\"\n}",
+    "headers": {
+      "X-PunkRecords-Model-Used": "claude-sonnet-4-20250514",
+      "X-PunkRecords-Model-Requested": "claude-sonnet-4-20250514",
+      "X-PunkRecords-Quality-Score": 0.92,
+      "X-PunkRecords-Quality-Delta": 0.15,
+      "X-PunkRecords-Trace-ID": "tr_a1b2c3d4e5f6"
+    }
+  },
+  {
+    "id": "anthropic-summarization-1",
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "taskType": "summarization",
+    "label": "技術記事の要約",
+    "originalPrompt": "以下の技術記事を3行で要約してください。\n\n記事: マイクロサービスアーキテクチャは、アプリケーションを小さな独立したサービスに分割するアプローチです。各サービスは独自のデータベースを持ち、APIを通じて通信します。この設計により、チームは独立してデプロイでき、技術スタックも自由に選択できます。一方で、分散システム特有の複雑さ（ネットワーク遅延、データ整合性、監視）が課題となります。",
+    "transformedPrompt": "<instructions>\n<task>以下の技術記事を要約してください。</task>\n<constraints>\n- 3行以内で簡潔にまとめる\n- 主要なポイントを網羅する\n- 技術用語はそのまま使用する\n</constraints>\n<input>\n記事: マイクロサービスアーキテクチャは、アプリケーションを小さな独立したサービスに分割するアプローチです。各サービスは独自のデータベースを持ち、APIを通じて通信します。この設計により、チームは独立してデプロイでき、技術スタックも自由に選択できます。一方で、分散システム特有の複雑さ（ネットワーク遅延、データ整合性、監視）が課題となります。\n</input>\n</instructions>",
+    "promptRuleApplied": "rule_xml_summarization_v1",
+    "response": "マイクロサービスアーキテクチャは、アプリケーションを独立した小さなサービスに分割し、API通信で連携する設計手法です。\n各チームが独立してデプロイ・技術選択できる柔軟性がメリットです。\n一方、ネットワーク遅延やデータ整合性など分散システム特有の課題への対処が必要となります。",
+    "headers": {
+      "X-PunkRecords-Model-Used": "claude-sonnet-4-20250514",
+      "X-PunkRecords-Model-Requested": "claude-sonnet-4-20250514",
+      "X-PunkRecords-Quality-Score": 0.88,
+      "X-PunkRecords-Quality-Delta": 0.12,
+      "X-PunkRecords-Trace-ID": "tr_b2c3d4e5f6g7"
+    }
+  },
+  {
+    "id": "anthropic-translation-1",
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "taskType": "translation",
+    "label": "技術文書の日英翻訳",
+    "originalPrompt": "以下の日本語を英語に翻訳してください。\n\nこのAPIは、リクエストボディにJSON形式でパラメータを指定します。レスポンスにはステータスコードとともに処理結果が返されます。認証にはBearerトークンを使用してください。",
+    "transformedPrompt": "<instructions>\n<task>以下の日本語テキストを英語に翻訳してください。</task>\n<guidelines>\n- 技術用語（API, JSON, Bearer token等）は英語のまま維持\n- 自然で読みやすい英語にする\n- 原文の意味を正確に保つ\n</guidelines>\n<source_text lang=\"ja\">\nこのAPIは、リクエストボディにJSON形式でパラメータを指定します。レスポンスにはステータスコードとともに処理結果が返されます。認証にはBearerトークンを使用してください。\n</source_text>\n</instructions>",
+    "promptRuleApplied": "rule_xml_translation_v1",
+    "response": "This API accepts parameters in JSON format in the request body. The response returns the processing result along with a status code. Please use a Bearer token for authentication.",
+    "headers": {
+      "X-PunkRecords-Model-Used": "claude-sonnet-4-20250514",
+      "X-PunkRecords-Model-Requested": "claude-sonnet-4-20250514",
+      "X-PunkRecords-Quality-Score": 0.90,
+      "X-PunkRecords-Quality-Delta": 0.08,
+      "X-PunkRecords-Trace-ID": "tr_c3d4e5f6g7h8"
+    }
+  },
+  {
+    "id": "openai-structured-1",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "taskType": "structured_output",
+    "label": "会議メモの構造化",
+    "originalPrompt": "以下の会議メモから、議題、決定事項、アクションアイテムを抽出してください。\n\nメモ: 本日のプロジェクト定例会議では、リリース日を5月15日に決定しました。田中さんがテスト計画を来週月曜までに作成し、鈴木さんがインフラ構成図を更新します。パフォーマンス問題については次回持ち越しとなりました。",
+    "transformedPrompt": "You are a structured data extraction assistant.\n\nExtract the following fields from the meeting notes below and respond in JSON format:\n- agenda: string (main topic)\n- decisions: string[] (decisions made)\n- action_items: { assignee: string, task: string, deadline: string }[]\n- deferred: string[] (items postponed)\n\nRespond ONLY with valid JSON. Do not include any explanation.\n\nMeeting Notes:\n本日のプロジェクト定例会議では、リリース日を5月15日に決定しました。田中さんがテスト計画を来週月曜までに作成し、鈴木さんがインフラ構成図を更新します。パフォーマンス問題については次回持ち越しとなりました。",
+    "promptRuleApplied": "rule_json_mode_structured_v1",
+    "response": "{\n  \"agenda\": \"プロジェクト定例会議\",\n  \"decisions\": [\"リリース日を5月15日に決定\"],\n  \"action_items\": [\n    { \"assignee\": \"田中\", \"task\": \"テスト計画を作成\", \"deadline\": \"来週月曜\" },\n    { \"assignee\": \"鈴木\", \"task\": \"インフラ構成図を更新\", \"deadline\": \"未定\" }\n  ],\n  \"deferred\": [\"パフォーマンス問題\"]\n}",
+    "headers": {
+      "X-PunkRecords-Model-Used": "gpt-4o",
+      "X-PunkRecords-Model-Requested": "gpt-4o",
+      "X-PunkRecords-Quality-Score": 0.89,
+      "X-PunkRecords-Quality-Delta": 0.18,
+      "X-PunkRecords-Trace-ID": "tr_d4e5f6g7h8i9"
+    }
+  },
+  {
+    "id": "openai-code-generation-1",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "taskType": "code_generation",
+    "label": "TypeScript ユーティリティ関数",
+    "originalPrompt": "TypeScriptで、配列をチャンクに分割するユーティリティ関数を書いてください。",
+    "transformedPrompt": "You are a senior TypeScript developer. Write production-quality code.\n\nTask: Write a utility function that splits an array into chunks.\n\nRequirements:\n- Function signature: chunk<T>(array: T[], size: number): T[][]\n- Handle edge cases: empty array, size <= 0, size > array.length\n- Include JSDoc comments\n- Use TypeScript generics\n\nRespond with ONLY the code. Do not include usage examples or explanations.",
+    "promptRuleApplied": "rule_code_gen_v1",
+    "response": "/**\n * Splits an array into chunks of the specified size.\n * @param array - The array to split\n * @param size - The size of each chunk\n * @returns An array of chunks\n */\nexport function chunk<T>(array: T[], size: number): T[][] {\n  if (size <= 0) return [];\n  if (array.length === 0) return [];\n\n  const result: T[][] = [];\n  for (let i = 0; i < array.length; i += size) {\n    result.push(array.slice(i, i + size));\n  }\n  return result;\n}",
+    "headers": {
+      "X-PunkRecords-Model-Used": "gpt-4o",
+      "X-PunkRecords-Model-Requested": "gpt-4o",
+      "X-PunkRecords-Quality-Score": 0.91,
+      "X-PunkRecords-Quality-Delta": 0.22,
+      "X-PunkRecords-Trace-ID": "tr_e5f6g7h8i9j0"
+    }
+  },
+  {
+    "id": "openai-qa-1",
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "taskType": "qa",
+    "label": "社内FAQ回答",
+    "originalPrompt": "有給休暇の申請方法を教えてください。",
+    "transformedPrompt": "You are a helpful HR assistant for a Japanese company. Answer questions based on company policies.\n\nSystem context: You answer employee questions about company policies, benefits, and procedures. Be concise, accurate, and helpful. If you don't know the answer, say so clearly.\n\nQuestion: 有給休暇の申請方法を教えてください。",
+    "promptRuleApplied": "rule_qa_system_msg_v1",
+    "response": "有給休暇の申請方法は以下の通りです：\n\n1. 社内ポータルの「勤怠管理」にログイン\n2. 「休暇申請」メニューを選択\n3. 希望日と理由を入力して送信\n4. 上長の承認後、申請完了\n\n※ 3日前までに申請してください。急な場合は直接上長にご連絡ください。",
+    "headers": {
+      "X-PunkRecords-Model-Used": "gpt-4o-mini",
+      "X-PunkRecords-Model-Requested": "gpt-4o-mini",
+      "X-PunkRecords-Quality-Score": 0.85,
+      "X-PunkRecords-Quality-Delta": 0.10,
+      "X-PunkRecords-Trace-ID": "tr_f6g7h8i9j0k1"
+    }
+  },
+  {
+    "id": "google-creative-1",
+    "provider": "google",
+    "model": "gemini-2.0-flash",
+    "taskType": "creative_writing",
+    "label": "製品キャッチコピー生成",
+    "originalPrompt": "AIを活用した翻訳サービスのキャッチコピーを5つ考えてください。",
+    "transformedPrompt": "あなたはプロのコピーライターです。\n\n以下の条件でキャッチコピーを生成してください：\n\n対象サービス: AIを活用した翻訳サービス\n生成数: 5つ\n条件:\n- 各コピーは20文字以内\n- ターゲット: ビジネスユーザー\n- トーン: プロフェッショナルかつ親しみやすい\n- 差別化ポイント: AI活用による高精度・高速を訴求\n\n番号付きリストで出力してください。",
+    "promptRuleApplied": "rule_creative_grounding_v1",
+    "response": "1. 言葉の壁を、AIが溶かす。\n2. 翻訳の常識を、書き換えよう。\n3. AI翻訳で、世界が近くなる。\n4. 精度と速度、その両方を。\n5. 伝えたい想い、そのままの精度で。",
+    "headers": {
+      "X-PunkRecords-Model-Used": "gemini-2.0-flash",
+      "X-PunkRecords-Model-Requested": "gemini-2.0-flash",
+      "X-PunkRecords-Quality-Score": 0.87,
+      "X-PunkRecords-Quality-Delta": 0.14,
+      "X-PunkRecords-Trace-ID": "tr_g7h8i9j0k1l2"
+    }
+  },
+  {
+    "id": "google-summarization-1",
+    "provider": "google",
+    "model": "gemini-2.5-pro",
+    "taskType": "summarization",
+    "label": "契約書の要点抽出",
+    "originalPrompt": "以下の契約条項の要点を箇条書きでまとめてください。\n\n第5条（秘密保持）: 甲および乙は、本契約に関連して知り得た相手方の技術上または営業上の情報を、相手方の事前の書面による承諾なしに第三者に開示してはならない。ただし、法令により開示が義務付けられる場合はこの限りではない。本条の義務は契約終了後3年間存続する。",
+    "transformedPrompt": "あなたは法務アシスタントです。\n\n以下の契約条項を分析し、要点を箇条書きでまとめてください。\n\n出力要件:\n- 箇条書き形式（各項目は1文で簡潔に）\n- 重要な数値・期間は必ず含める\n- 例外条件がある場合は明記する\n- 法律用語はわかりやすく言い換える\n\n対象条項:\n第5条（秘密保持）: 甲および乙は、本契約に関連して知り得た相手方の技術上または営業上の情報を、相手方の事前の書面による承諾なしに第三者に開示してはならない。ただし、法令により開示が義務付けられる場合はこの限りではない。本条の義務は契約終了後3年間存続する。",
+    "promptRuleApplied": "rule_summarization_grounding_v1",
+    "response": "• 双方は契約を通じて知った相手の技術・営業情報を第三者に開示してはならない\n• 開示には相手方の事前の書面による承諾が必要\n• 例外: 法令で開示が義務付けられる場合は開示可能\n• 秘密保持義務は契約終了後も3年間継続する",
+    "headers": {
+      "X-PunkRecords-Model-Used": "gemini-2.5-pro",
+      "X-PunkRecords-Model-Requested": "gemini-2.5-pro",
+      "X-PunkRecords-Quality-Score": 0.93,
+      "X-PunkRecords-Quality-Delta": 0.11,
+      "X-PunkRecords-Trace-ID": "tr_h8i9j0k1l2m3"
+    }
+  }
+]
