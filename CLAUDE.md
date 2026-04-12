@@ -36,7 +36,26 @@
 - 共通コンポーネントを作って複数モックで使い回すことは**禁止**
 - 各モックのスタイリングは、そのモックの中で完結させること
 - 他のモックのコンポーネントやスタイルを import することは**禁止**
+- `app/globals.css` を import することは**禁止**。ルートの CSS は使わないこと
 - 「似ているから共通化しよう」という判断は**絶対にしない**こと
+
+### Tailwind CSS の使い方
+
+各モックで Tailwind CSS を使う場合は、**必ず**モック内に専用の CSS ファイルを作成すること:
+
+1. `app/モック名/styles.css` を作成し、`@import "tailwindcss";` と記述する
+2. `app/モック名/layout.tsx` で `import "./styles.css";` する
+
+```tsx
+// app/モック名/layout.tsx の例
+import "./styles.css";
+
+export default function MockLayout({ children }: { children: React.ReactNode }) {
+  return <div>{children}</div>;
+}
+```
+
+- `app/globals.css` や他のモックの CSS ファイルを import することは**絶対に禁止**
 
 ### 共通化して良いもの
 

@@ -13,9 +13,12 @@ export async function POST(request: Request) {
       );
     }
 
+    const defaultModel =
+      body.provider === "anthropic" ? "claude-sonnet-4-20250514" : "gpt-4o";
+
     const llmRequest: LLMRequest = {
       provider: body.provider,
-      model: body.model,
+      model: body.model || defaultModel,
       messages: body.messages,
     };
 

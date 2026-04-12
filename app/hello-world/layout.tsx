@@ -1,4 +1,4 @@
-import "@/app/globals.css";
+import "./styles.css";
 
 export default function HelloWorldLayout({
   children,

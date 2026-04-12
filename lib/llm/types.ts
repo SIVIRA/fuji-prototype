@@ -9,7 +9,6 @@ export interface LLMRequest {
   provider: LLMProvider;
   model: string;
   messages: LLMMessage[];
-  stream?: boolean;
 }
 
 export interface LLMResponse {
