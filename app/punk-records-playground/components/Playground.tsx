@@ -91,12 +91,17 @@ export default function Playground() {
       : null;
 
     const originalPrompt = request.prompt;
-    const transformedPrompt = scenario
-      ? scenario.transformedPrompt
-      : buildTransformedPrompt(request.taskType, originalPrompt);
-    const promptRuleApplied = scenario
-      ? scenario.promptRuleApplied
-      : `rule_${request.taskType}_generic_v1`;
+
+    // ユーザーがプロンプトを書き換えたかどうかを判定
+    const isPromptModified = !scenario || scenario.originalPrompt !== originalPrompt;
+
+    // 書き換え済みなら常にユーザーの入力で変換、未変更ならシナリオの変換を使う
+    const transformedPrompt = isPromptModified
+      ? buildTransformedPrompt(request.taskType, originalPrompt)
+      : scenario.transformedPrompt;
+    const promptRuleApplied = isPromptModified
+      ? `rule_${request.taskType}_generic_v1`
+      : scenario.promptRuleApplied;
 
     try {
       // /api/llm を実際に呼び出す（変換後のプロンプトで）
@@ -129,10 +134,10 @@ export default function Playground() {
         });
       } else {
         // シミュレートされたヘッダー情報を生成
-        const qualityScore = scenario
+        const qualityScore = !isPromptModified && scenario
           ? scenario.headers["X-PunkRecords-Quality-Score"]
           : +(0.8 + Math.random() * 0.15).toFixed(2);
-        const qualityDelta = scenario
+        const qualityDelta = !isPromptModified && scenario
           ? scenario.headers["X-PunkRecords-Quality-Delta"]
           : +(0.05 + Math.random() * 0.2).toFixed(2);
 
