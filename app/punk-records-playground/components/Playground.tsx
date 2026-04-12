@@ -7,8 +7,10 @@ import scenarios from "../data/scenarios.json";
 
 export type Scenario = (typeof scenarios)[number];
 
+export type Provider = "anthropic" | "openai" | "gemini";
+
 export type RequestState = {
-  provider: "anthropic" | "openai" | "google";
+  provider: Provider;
   model: string;
   taskType: string;
   preset: string; // scenario id or "custom"
@@ -17,16 +19,23 @@ export type RequestState = {
 
 export type ResponseState = {
   response: string;
-  headers: Scenario["headers"];
+  headers: {
+    "X-PunkRecords-Model-Used": string;
+    "X-PunkRecords-Model-Requested": string;
+    "X-PunkRecords-Quality-Score": number;
+    "X-PunkRecords-Quality-Delta": number | null;
+    "X-PunkRecords-Trace-ID": string;
+  };
   originalPrompt: string;
   transformedPrompt: string;
   promptRuleApplied: string;
+  error?: string;
 } | null;
 
 const MODEL_OPTIONS: Record<string, string[]> = {
   anthropic: ["claude-sonnet-4-20250514", "claude-haiku-4-5-20251001"],
   openai: ["gpt-4o", "gpt-4o-mini"],
-  google: ["gemini-2.0-flash", "gemini-2.5-pro"],
+  gemini: ["gemini-2.5-flash", "gemini-2.0-flash"],
 };
 
 const TASK_TYPES = [
@@ -37,6 +46,26 @@ const TASK_TYPES = [
   "qa",
   "creative_writing",
 ] as const;
+
+// カスタム入力時の汎用 PromptRule 変換テンプレート
+function buildTransformedPrompt(taskType: string, originalPrompt: string): string {
+  const templates: Record<string, (p: string) => string> = {
+    structured_output: (p) =>
+      `<instructions>\n<task>${p}</task>\n<output_format>\nJSON形式で構造化して回答してください。\n</output_format>\n</instructions>`,
+    summarization: (p) =>
+      `<instructions>\n<task>以下を簡潔に要約してください。</task>\n<constraints>\n- 主要なポイントを網羅する\n- 簡潔にまとめる\n</constraints>\n<input>\n${p}\n</input>\n</instructions>`,
+    translation: (p) =>
+      `<instructions>\n<task>以下を翻訳してください。</task>\n<guidelines>\n- 自然で読みやすい翻訳にする\n- 原文の意味を正確に保つ\n</guidelines>\n<source_text>\n${p}\n</source_text>\n</instructions>`,
+    code_generation: (p) =>
+      `You are a senior developer. Write production-quality code.\n\nTask: ${p}\n\nRequirements:\n- Handle edge cases\n- Include comments\n- Respond with ONLY the code.`,
+    qa: (p) =>
+      `You are a helpful assistant. Answer concisely and accurately.\n\nQuestion: ${p}`,
+    creative_writing: (p) =>
+      `あなたはプロのライターです。\n\n以下のリクエストに応えてください：\n${p}\n\n条件:\n- 読者を惹きつける表現を使う\n- 簡潔かつインパクトのある内容にする`,
+  };
+  const fn = templates[taskType] ?? templates.qa;
+  return fn(originalPrompt);
+}
 
 export default function Playground() {
   const [request, setRequest] = useState<RequestState>({
@@ -55,41 +84,93 @@ export default function Playground() {
 
   const handleSend = async () => {
     setLoading(true);
-    // 擬似ローディング
-    await new Promise((resolve) => setTimeout(resolve, 800));
 
-    if (request.preset !== "custom") {
-      const scenario = scenarios.find((s) => s.id === request.preset);
-      if (scenario) {
+    // シナリオからの変換情報を取得、またはカスタム用に生成
+    const scenario = request.preset !== "custom"
+      ? scenarios.find((s) => s.id === request.preset)
+      : null;
+
+    const originalPrompt = request.prompt;
+    const transformedPrompt = scenario
+      ? scenario.transformedPrompt
+      : buildTransformedPrompt(request.taskType, originalPrompt);
+    const promptRuleApplied = scenario
+      ? scenario.promptRuleApplied
+      : `rule_${request.taskType}_generic_v1`;
+
+    try {
+      // /api/llm を実際に呼び出す（変換後のプロンプトで）
+      const res = await fetch("/api/llm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: request.provider,
+          model: request.model,
+          messages: [{ role: "user", content: transformedPrompt }],
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
         setResponse({
-          response: scenario.response,
-          headers: scenario.headers,
-          originalPrompt: scenario.originalPrompt,
-          transformedPrompt: scenario.transformedPrompt,
-          promptRuleApplied: scenario.promptRuleApplied,
+          response: "",
+          headers: {
+            "X-PunkRecords-Model-Used": request.model,
+            "X-PunkRecords-Model-Requested": request.model,
+            "X-PunkRecords-Quality-Score": 0,
+            "X-PunkRecords-Quality-Delta": null,
+            "X-PunkRecords-Trace-ID": `tr_err_${Date.now().toString(36)}`,
+          },
+          originalPrompt,
+          transformedPrompt,
+          promptRuleApplied,
+          error: data.error ?? "Request failed",
+        });
+      } else {
+        // シミュレートされたヘッダー情報を生成
+        const qualityScore = scenario
+          ? scenario.headers["X-PunkRecords-Quality-Score"]
+          : +(0.8 + Math.random() * 0.15).toFixed(2);
+        const qualityDelta = scenario
+          ? scenario.headers["X-PunkRecords-Quality-Delta"]
+          : +(0.05 + Math.random() * 0.2).toFixed(2);
+
+        setResponse({
+          response: data.content,
+          headers: {
+            "X-PunkRecords-Model-Used": data.model ?? request.model,
+            "X-PunkRecords-Model-Requested": request.model,
+            "X-PunkRecords-Quality-Score": qualityScore,
+            "X-PunkRecords-Quality-Delta": qualityDelta,
+            "X-PunkRecords-Trace-ID": `tr_${Date.now().toString(36)}`,
+          },
+          originalPrompt,
+          transformedPrompt,
+          promptRuleApplied,
         });
       }
-    } else {
-      // カスタム入力時は汎用レスポンスを返す
+    } catch (err) {
       setResponse({
-        response:
-          "This is a simulated response for your custom prompt. In production, Punk Records would apply the appropriate PromptRule transformation and route to the selected model.",
+        response: "",
         headers: {
           "X-PunkRecords-Model-Used": request.model,
           "X-PunkRecords-Model-Requested": request.model,
-          "X-PunkRecords-Quality-Score": 0.85,
-          "X-PunkRecords-Quality-Delta": null as unknown as number,
-          "X-PunkRecords-Trace-ID": `tr_custom_${Date.now().toString(36)}`,
+          "X-PunkRecords-Quality-Score": 0,
+          "X-PunkRecords-Quality-Delta": null,
+          "X-PunkRecords-Trace-ID": `tr_err_${Date.now().toString(36)}`,
         },
-        originalPrompt: request.prompt,
-        transformedPrompt: `<instructions>\n<task>${request.prompt}</task>\n<output_format>Respond clearly and concisely.</output_format>\n</instructions>`,
-        promptRuleApplied: `rule_${request.taskType}_generic_v1`,
+        originalPrompt,
+        transformedPrompt,
+        promptRuleApplied,
+        error: err instanceof Error ? err.message : "Network error",
       });
     }
+
     setLoading(false);
   };
 
-  const handleProviderChange = (provider: "anthropic" | "openai" | "google") => {
+  const handleProviderChange = (provider: Provider) => {
     const newModel = MODEL_OPTIONS[provider][0];
     const newScenarios = scenarios.filter(
       (s) => s.provider === provider && s.taskType === request.taskType

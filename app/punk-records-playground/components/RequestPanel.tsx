@@ -1,6 +1,6 @@
 "use client";
 
-import type { RequestState, Scenario } from "./Playground";
+import type { RequestState, Scenario, Provider } from "./Playground";
 
 type Props = {
   request: RequestState;
@@ -8,7 +8,7 @@ type Props = {
   taskTypes: string[];
   filteredScenarios: Scenario[];
   loading: boolean;
-  onProviderChange: (provider: "anthropic" | "openai" | "google") => void;
+  onProviderChange: (provider: Provider) => void;
   onModelChange: (model: string) => void;
   onTaskTypeChange: (taskType: string) => void;
   onPresetChange: (preset: string) => void;
@@ -19,7 +19,7 @@ type Props = {
 const PROVIDER_LABELS: Record<string, string> = {
   anthropic: "Anthropic",
   openai: "OpenAI",
-  google: "Google",
+  gemini: "Google (Gemini)",
 };
 
 const TASK_TYPE_LABELS: Record<string, string> = {
@@ -52,7 +52,7 @@ export default function RequestPanel({
       <div>
         <label className="block text-sm text-gray-400 mb-2">Provider</label>
         <div className="flex gap-1 bg-[#0F1117] rounded-lg p-1">
-          {(["anthropic", "openai", "google"] as const).map((p) => (
+          {(["anthropic", "openai", "gemini"] as const).map((p) => (
             <button
               key={p}
               onClick={() => onProviderChange(p)}

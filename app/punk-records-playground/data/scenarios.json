@@ -109,7 +109,7 @@
   },
   {
     "id": "google-creative-1",
-    "provider": "google",
+    "provider": "gemini",
     "model": "gemini-2.0-flash",
     "taskType": "creative_writing",
     "label": "製品キャッチコピー生成",
@@ -127,7 +127,7 @@
   },
   {
     "id": "google-summarization-1",
-    "provider": "google",
+    "provider": "gemini",
     "model": "gemini-2.5-pro",
     "taskType": "summarization",
     "label": "契約書の要点抽出",

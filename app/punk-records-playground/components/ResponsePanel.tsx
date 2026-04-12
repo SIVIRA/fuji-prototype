@@ -89,9 +89,16 @@ export default function ResponsePanel({ response, loading }: Props) {
 
       {/* Tab Content */}
       {activeTab === "response" ? (
-        <pre className="bg-[#0F1117] rounded-lg p-4 text-sm text-gray-200 font-mono whitespace-pre-wrap overflow-auto max-h-96 border border-gray-800">
-          {response.response}
-        </pre>
+        response.error ? (
+          <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 text-sm text-red-300">
+            <p className="font-semibold mb-1">Error</p>
+            <p>{response.error}</p>
+          </div>
+        ) : (
+          <pre className="bg-[#0F1117] rounded-lg p-4 text-sm text-gray-200 font-mono whitespace-pre-wrap overflow-auto max-h-96 border border-gray-800">
+            {response.response}
+          </pre>
+        )
       ) : (
         <PromptTransformView
           originalPrompt={response.originalPrompt}
