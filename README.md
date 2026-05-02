@@ -19,6 +19,7 @@ cp .env.example .env
 ```
 ANTHROPIC_API_KEY=sk-ant-xxxxx
 OPENAI_API_KEY=sk-xxxxx
+GEMINI_API_KEY=xxxxx
 ```
 
 **Anthropic API キーの取得:**
@@ -39,6 +40,13 @@ OPENAI_API_KEY=sk-xxxxx
 6. 「Create secret key」をクリック
 7. 表示されたキー（`sk-` で始まる文字列）をコピー
 
+**Gemini API キーの取得:**
+1. https://aistudio.google.com/app/apikey にアクセス
+2. Google アカウントでログイン
+3. 「Create API key」をクリック
+4. プロジェクトを選択（または新規作成）して API キーを発行
+5. 表示されたキーをコピー
+
 ### 2. Vercel の設定
 
 1. https://vercel.com/ にアクセスし、GitHub アカウントでログイン
@@ -49,6 +57,7 @@ OPENAI_API_KEY=sk-xxxxx
 6. 以下の環境変数を追加:
    - Key: `ANTHROPIC_API_KEY` / Value: `.env` と同じ値
    - Key: `OPENAI_API_KEY` / Value: `.env` と同じ値
+   - Key: `GEMINI_API_KEY` / Value: `.env` と同じ値
 7. 「Deploy」をクリック
 
 以降、main ブランチに push されると自動でデプロイされる。
